@@ -1,5 +1,5 @@
 <template>
-  <el-data-table v-bind="tableConfig"></el-data-table>
+  <el-data-table v-bind="tableConfig" />
 </template>
 <script>
 import {formatDate} from '@/const/filter'
