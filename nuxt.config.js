@@ -4,9 +4,11 @@ const env = process.env
 const isProd = env.MODE == 'prod'
 const mockServer =
   'https://easy-mock.com/mock/5c1b3895fe5907404e654045/femessage-mock'
+const mockDataServer = 'http://yapi.demo.qunar.com/mock/67385'
 
 // 不能以斜杠结尾
-let apiServer = process.env.API_SERVER
+let apiServer = process.env.API_SERVER || mockServer
+
 // 必须以斜杠结尾
 let publicPath = process.env.PUBLIC_PATH
 
@@ -15,11 +17,31 @@ const config = {
   env: {
     mock: {
       '/deepexi-tenant': mockServer,
-      '/deepexi-permission': mockServer
+      '/deepexi-permission': mockServer,
+      '/component': {
+        target: mockDataServer,
+        changeOrigin: true,
+        onProxyReq: function(proxyReq, req, res) {
+          // convert all api requests (POST/PUT/DELETE) to GET so they work in webpack dev server for mocking
+          if (['PUT', 'DELETE'].indexOf(req.method) !== -1) {
+            proxyReq.method = 'POST'
+          }
+        }
+      }
     },
     dev: {
       '/deepexi-tenant': apiServer,
-      '/deepexi-permission': apiServer
+      '/deepexi-permission': apiServer,
+      '/component': {
+        target: mockDataServer,
+        changeOrigin: true,
+        onProxyReq: function(proxyReq, req, res) {
+          // convert all api requests (POST/PUT/DELETE) to GET so they work in webpack dev server for mocking
+          if (['PUT', 'DELETE'].indexOf(req.method) !== -1) {
+            proxyReq.method = 'POST'
+          }
+        }
+      }
     }
   }
 }
